@@ -9,7 +9,8 @@ const image = document.getElementById('cover'),
     nextBtn = document.getElementById('next'),
     playBtn = document.getElementById('play'),
     background = document.getElementById('bg-img'),
-    volumeSlider = document.getElementById('volume-slider');
+    volumeSlider = document.getElementById('volume-slider'),
+    volumeControl = document.querySelector('.volume-control');
 
 const music = new Audio();
 
@@ -68,27 +69,19 @@ let musicIndex = 0;
 let isPlaying = false;
 
 function togglePlay() {
-    if (isPlaying) {
-        pauseMusic();
-    } else {
-        playMusic();
-    }
+    isPlaying ? pauseMusic() : playMusic();
 }
 
 function playMusic() {
     isPlaying = true;
-    // Change play button icon
     playBtn.classList.replace('fa-play', 'fa-pause');
-    // Set button hover title
     playBtn.setAttribute('title', 'Pause');
     music.play();
 }
 
 function pauseMusic() {
     isPlaying = false;
-    // Change pause button icon
     playBtn.classList.replace('fa-pause', 'fa-play');
-    // Set button hover title
     playBtn.setAttribute('title', 'Play');
     music.pause();
 }
@@ -111,7 +104,6 @@ function updateProgressBar() {
     const { duration, currentTime } = music;
     const progressPercent = (currentTime / duration) * 100;
     progress.style.width = `${progressPercent}%`;
-
     const formatTime = (time) => String(Math.floor(time)).padStart(2, '0');
     durationEl.textContent = `${formatTime(duration / 60)}:${formatTime(duration % 60)}`;
     currentTimeEl.textContent = `${formatTime(currentTime / 60)}:${formatTime(currentTime % 60)}`;
@@ -123,23 +115,21 @@ function setProgressBar(e) {
     music.currentTime = (clickX / width) * music.duration;
 }
 
+function toggleVolumeSlider() {
+    volumeSlider.style.display = volumeSlider.style.display === 'block' ? 'none' : 'block';
+}
+
+function setVolume(e) {
+    music.volume = e.target.value;
+}
+
 playBtn.addEventListener('click', togglePlay);
 prevBtn.addEventListener('click', () => changeMusic(-1));
 nextBtn.addEventListener('click', () => changeMusic(1));
 music.addEventListener('ended', () => changeMusic(1));
 music.addEventListener('timeupdate', updateProgressBar);
 playerProgress.addEventListener('click', setProgressBar);
+volumeControl.addEventListener('click', toggleVolumeSlider);
+volumeSlider.addEventListener('input', setVolume);
 
 loadMusic(songs[musicIndex]);
-
-const volumeControl = document.querySelector('.volume-control');
-
-volumeControl.addEventListener('click', () => {
-    console.log('Volume icon clicked');
-    volumeSlider.style.display = volumeSlider.style.display === 'block' ? 'none' : 'block'; // Tampilkan atau sembunyikan slider saat logo diklik
-});
-
-// Atur volume musik berdasarkan slider
-volumeSlider.addEventListener('input', (e) => {
-    music.volume = e.target.value; // Atur volume musik
-});
